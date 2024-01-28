@@ -83,7 +83,7 @@ const SignupForm = () => {
       toast.success("Account created successfully");
       router.push("/dashboard");
     }
-  }, [error, isSuccess, data]);
+  }, [error, isSuccess, data, router]);
 
   function onSubmit(values: z.infer<typeof signupSchema>) {
     mutate(values);

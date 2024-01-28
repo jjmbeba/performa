@@ -7,14 +7,14 @@ import { useFormStore } from "@/store/formStore";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
-const page = () => {
+const Page = () => {
   const [step] = useFormStore((state) => [state.step]);
   const [user] = useAuthStore((state) => [state.user]);
   const router = useRouter();
 
   useEffect(() => {
     if (user) router.push("/dashboard");
-  }, []);
+  }, [user, router]);
 
   switch (step) {
     case 1:
@@ -29,4 +29,4 @@ const page = () => {
   }
 };
 
-export default page;
+export default Page;

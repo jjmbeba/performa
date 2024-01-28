@@ -20,7 +20,7 @@ const Navbar = () => {
     };
 
     fetchUser();
-  }, []);
+  }, [setUser]);
 
   return (
     <div className=" py-4 px-8 flex items-center justify-between">

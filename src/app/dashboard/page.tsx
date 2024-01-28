@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../auth-actions/server/actions";
 
-const page = async () => {
+const Page = async () => {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -13,4 +13,4 @@ const page = async () => {
   </div>;
 };
 
-export default page;
+export default Page;

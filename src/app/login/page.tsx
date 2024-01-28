@@ -33,7 +33,7 @@ const loginSchema = z.object({
   }),
 });
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const [user, setUser] = useAuthStore((state) => [state.user, state.setUser]);
 
@@ -41,7 +41,7 @@ const page = () => {
     if (user) {
       router.push("/dashboard");
     }
-  }, []);
+  }, [router, user]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -70,7 +70,7 @@ const page = () => {
       setUser(data.data.user);
       router.push("/dashboard");
     }
-  }, [error, isSuccess, data]);
+  }, [error, isSuccess, data, setUser, router]);
 
   function onSubmit(values: z.infer<typeof loginSchema>) {
     mutate(values);
@@ -125,7 +125,7 @@ const page = () => {
           />
           <div className="flex flex-col items-start justify-start">
             <Button variant={"link"}>
-              <Link href={"/signup"}>Don't have an account?</Link>
+              <Link href={"/signup"}>Don&apos;t have an account?</Link>
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
@@ -138,4 +138,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
