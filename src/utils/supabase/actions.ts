@@ -10,12 +10,6 @@ export function createClient(cookieStore: ReturnType<typeof cookies>) {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
-          return cookieStore.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          return cookieStore.set({ name, value: "", ...options });
-        },
       },
     }
   );
