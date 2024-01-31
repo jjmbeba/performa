@@ -12,7 +12,7 @@ import { columns } from "@/tables/students/columns";
 import DataTable from "@/components/ui/data-table";
 
 
-const page = () => {
+const Page = () => {
   const [dataLayout, setDataLayout] = useState("grid");
 
   const {
@@ -76,4 +76,4 @@ const page = () => {
     </div>
   );
 };
-export default page;
+export default Page;
