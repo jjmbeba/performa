@@ -9,26 +9,30 @@ import Logo from "./Logo";
 import { ModeToggle } from "./ModeToggle";
 import UserMenu from "./UserMenu";
 import { Button } from "./ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { redirect } from "next/navigation";
 
 const Navbar = () => {
-  const [user, setUser] = useAuthStore((state) => [state.user, state.setUser]);
-
-  useEffect(() => {
-    const fetchUser = async () => {
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
       const user = await getCurrentUser();
-      setUser(user);
-    };
 
-    fetchUser();
-  }, [setUser]);
+      if(!user){
+        redirect('/login')
+      }
+
+      return user;
+    },
+  });
 
   return (
-    <div className=" py-4 px-8 flex items-center justify-between">
+    <div className="py-4 px-8 flex w-full fixed z-20 items-center justify-between bg-inherit">
       <Logo />
       <div className="flex items-center gap-16">
         <ModeToggle />
         {user ? (
-          <UserMenu user={user} setUser={setUser} />
+          <UserMenu user={user} />
         ) : (
           <div className="flex items-center gap-4">
             <Link href={"/signup"}>

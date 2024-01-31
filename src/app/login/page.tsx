@@ -23,6 +23,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
+import { revalidatePath } from "next/cache";
+import { revalidate } from "../auth-actions/server/actions";
 
 const loginSchema = z.object({
   email: z.string().email({
@@ -68,6 +70,7 @@ const Page = () => {
     } else if (isSuccess) {
       toast.success("Login successful");
       setUser(data.data.user);
+      revalidate();
       router.push("/dashboard");
     }
   }, [error, isSuccess, data, setUser, router]);

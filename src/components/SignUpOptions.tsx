@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "./ui/button";
 import { Mail } from "lucide-react";
@@ -7,9 +9,12 @@ import { motion } from "framer-motion";
 import { signInWithGoogle } from "@/app/auth-actions/client/actions";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { revalidatePath } from "next/cache";
 
 const SignUpOptions = () => {
   const [onHandleNext] = useFormStore((state) => [state.onHandleNext]);
+  const [user, setUser] = useAuthStore((state) => [state.user, state.setUser]);
 
   return (
     <motion.div
@@ -29,7 +34,7 @@ const SignUpOptions = () => {
             delay: 0.5,
           },
           translateX: 0,
-        }
+        },
       }}
       className="flex flex-col items-center justify-center mt-8"
     >
@@ -39,15 +44,22 @@ const SignUpOptions = () => {
           <Mail className="mr-2 h-4 w-4" />
           Sign up with email and password
         </Button>
-        <Button variant={"secondary"} onClick={async() => {
-          const {data, error} = await signInWithGoogle();
+        <Button
+          variant={"secondary"}
+          onClick={async () => {
+            const { data, error, user } = await signInWithGoogle();
 
-          if(error){
-            toast.error(error.message)
-          }else if(data){
-            redirect('/dashboard')
-          }
-        }}>
+            console.log(user);
+            if (error) {
+              toast.error(error.message);
+            } else if (data) {
+              setUser(user);
+              revalidatePath("/", "layout");
+
+              redirect("/dashboard");
+            }
+          }}
+        >
           <GoogleOutlined className="mr-2 h-4 w-4" />
           Sign in with Google
         </Button>

@@ -26,6 +26,7 @@ import { signUpNewUser } from "@/app/auth-actions/client/actions";
 import { useRouter } from "next/navigation";
 import { useFormStore } from "@/store/formStore";
 import { motion } from "framer-motion";
+import { revalidatePath } from "next/cache";
 
 const signupSchema = z
   .object({
@@ -81,6 +82,7 @@ const SignupForm = () => {
       toast.error(data.error.message);
     } else if (isSuccess) {
       toast.success("Account created successfully");
+      revalidatePath("/", "layout");
       router.push("/dashboard");
     }
   }, [error, isSuccess, data, router]);

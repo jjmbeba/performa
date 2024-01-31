@@ -17,17 +17,21 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { UserState } from "@/store/authStore";
 
-interface Props extends UserState {}
+interface Props {
+  user: User | null;
+}
 
-const UserMenu = ({ user, setUser }: Props) => {
+const UserMenu = ({ user }: Props) => {
   const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
-          <AvatarImage src={user?.user_metadata.avatar_url}/>
+          <AvatarImage src={user?.user_metadata?.avatar_url || ""} />
           <AvatarFallback>
-            {user?.user_metadata.full_name.split(" ").map((a: string) => a.charAt(0))}
+            {user?.user_metadata?.full_name
+              .split(" ")
+              .map((a: string) => a.charAt(0))}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -43,7 +47,6 @@ const UserMenu = ({ user, setUser }: Props) => {
             if (error?.message) {
               toast.error(error.message);
             } else {
-              setUser(null);
               router.push("/");
             }
           }}

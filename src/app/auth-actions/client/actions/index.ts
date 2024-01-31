@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
+import { Student } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 
 type SignupData = {
@@ -71,6 +72,38 @@ export async function signInWithGoogle() {
       },
     },
   });
+
+  const user = await getCurrentUser();
+
+  return { data, user, error };
+}
+
+export async function getParentStudents() {
+  const user = await getCurrentUser();
+
+  if (user) {
+    const { data: students, error } = await supabase
+      .from("students")
+      .select(`*`)
+      .eq("parent_id", user.id);
+
+    return { students, error };
+  }
+}
+
+export async function getExistingClasses() {
+  const { data, error } = await supabase
+    .from("classes")
+    .select("id, class_name");
+
+  return { data, error };
+}
+
+export async function addStudent(values: Student) {
+  const { data, error } = await supabase
+    .from("students")
+    .insert([values])
+    .select();
 
   return { data, error };
 }
