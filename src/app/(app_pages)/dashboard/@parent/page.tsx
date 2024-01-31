@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
 
-const page = () => {
+const Page = () => {
   const { data: user, error } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
@@ -38,4 +38,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
