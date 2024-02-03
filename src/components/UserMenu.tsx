@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction } from "react";
+import { signOutUser } from "@/app/auth-actions/client/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -10,12 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut } from "lucide-react";
 import { User } from "@supabase/supabase-js";
-import { signOutUser } from "@/app/auth-actions/client/actions";
-import { toast } from "sonner";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { UserState } from "@/store/authStore";
+import { toast } from "sonner";
 
 interface Props {
   user: User | null;

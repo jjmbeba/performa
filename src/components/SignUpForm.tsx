@@ -111,7 +111,7 @@ const SignupForm = () => {
           translateX: 0,
         },
       }}
-      className="max-w-lg mx-auto mt-2"
+      className="max-w-lg mx-auto mt-2 py-24"
     >
       <div className="flex flex-col items-start gap-4">
         <Button onClick={onHandleBack} variant={"default"} size={"icon"}>

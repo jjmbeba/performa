@@ -1,38 +1,42 @@
-"use client";
-
-import { getCurrentUser } from "@/app/auth-actions/client/actions";
-import { useAuthStore } from "@/store/authStore";
+import { getSession } from "@/app/auth-actions/server/actions";
 import { UserAddOutlined, UserOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
 import Logo from "./Logo";
 import { ModeToggle } from "./ModeToggle";
 import UserMenu from "./UserMenu";
 import { Button } from "./ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
 
-const Navbar = () => {
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const user = await getCurrentUser();
+const Navbar = async () => {
+  // const router = useRouter();
 
-      if(!user){
-        redirect('/login')
-      }
+  // const { data: user } = useQuery({
+  //   queryKey: ["session"],
+  //   queryFn: async () => {
+  //     const {user} = await getSession();
 
-      return user;
-    },
-  });
+  //     if(!user){
+  //       router.push('/login')
+  //     }
+
+  //     return user;
+  //   },
+  // });
+
+  const { session, error } = await getSession();
+
+  if(!session){
+    redirect('/login');
+  }
 
   return (
     <div className="py-4 px-8 flex w-full fixed z-20 items-center justify-between bg-inherit">
       <Logo />
       <div className="flex items-center gap-16">
         <ModeToggle />
-        {user ? (
-          <UserMenu user={user} />
+        {session.user ? (
+          <UserMenu user={session.user} />
         ) : (
           <div className="flex items-center gap-4">
             <Link href={"/signup"}>

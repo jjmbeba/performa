@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { UserAddOutlined } from "@ant-design/icons";
+import {
+  addStudent,
+  getExistingClasses,
+  getSession,
+} from "@/app/auth-actions/client/actions";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -17,12 +16,12 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -30,16 +29,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import {
-  addStudent,
-  getCurrentUser,
-  getExistingClasses,
-} from "@/app/auth-actions/client/actions";
+import { cn } from "@/lib/utils";
+import { UserAddOutlined } from "@ant-design/icons";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { redirect } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const addChildSchema = z.object({
   first_name: z.string().min(2, {
@@ -58,16 +57,18 @@ const addChildSchema = z.object({
 });
 
 const AddChildButton = () => {
-  const { data: user, error } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const user = await getCurrentUser();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-      if (!user) {
-        redirect("/login");
+  const { data: user } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      const { session, error } = await getSession();
+
+      if (error) {
+        toast.error(error.message);
       }
 
-      return user;
+      return session?.user;
     },
   });
 
@@ -127,23 +128,25 @@ const AddChildButton = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      form.reset();
+      setDialogOpen(false);
       toast.success("Student added successful");
     }
-  },[isSuccess])
+  }, [isSuccess]);
 
   function onSubmit(values: z.infer<typeof addChildSchema>) {
     mutate(values);
   }
 
-  console.log(data);
-
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger>
-        <Button>
+        <div className={cn(buttonVariants({
+          variant:'default'
+        }))}>
           <UserAddOutlined className="mr-2 w-4  h-4" />
           Add child
-        </Button>
+        </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

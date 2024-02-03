@@ -1,9 +1,8 @@
 "use client";
 
-import { StudentData } from "@/utils/types";
-import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { deleteStudent } from "@/app/auth-actions/client/actions";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox";
+import { StudentData } from "@/utils/types";
+import { UserDeleteOutlined, UserOutlined } from "@ant-design/icons";
+import { useMutation } from "@tanstack/react-query";
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<StudentData>[] = [
   {
@@ -99,8 +103,25 @@ export const columns: ColumnDef<StudentData>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem className="flex items-center cursor-pointer">
+              <UserOutlined className="mr-2 h-4 w-4" />
+              View child
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={async () => {
+                const { error } = await deleteStudent(Number(student.id));
+
+                if (!error) {
+                  toast.success("Student deleted successfully");
+                } else {
+                  toast.error(error.message);
+                }
+              }}
+              className="text-red-600 flex items-center cursor-pointer"
+            >
+              <UserDeleteOutlined className="mr-2 h-4 w-4" />
+              Delete child
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

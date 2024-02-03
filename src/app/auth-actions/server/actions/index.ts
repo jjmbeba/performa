@@ -31,35 +31,28 @@ export async function getUserRole() {
       .select("role")
       .eq("id", user.id);
 
-    
-// const students = supabase
-//   .channel("custom-all-channel")
-//   .on(
-//     "postgres_changes",
-//     { event: "*", schema: "public", table: "students" },
-//     (payload) => {
-//       console.log("Change received!", payload);
-//     }
-//   )
-//   .subscribe();
-
-//   console.log(students.unsubscribe, 'students')
-
-
     return { userRole, error };
   }
 }
 
 export async function getParentStudents() {
-
   const user = await getCurrentUser();
 
-  if (user){
+  if (user) {
     const { data: students, error } = await supabase
       .from("students")
       .select(`*`)
       .eq("parent_id", user.id);
-  
-  return {students, error};
+
+    return { students, error };
   }
+}
+
+export async function getSession() {
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
+
+  return { session, error };
 }

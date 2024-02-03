@@ -1,26 +1,32 @@
 "use client";
 
-import { getCurrentUser } from "@/app/auth-actions/client/actions/index";
-import React from "react";
+import {
+  getSession
+} from "@/app/auth-actions/client/actions/index";
 import ParentSummary from "@/components/ParentSummary";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { redirect } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const Page = () => {
-  const { data: user, error, isLoading } = useQuery({
-    queryKey: ["user"],
+  const {
+    data: session,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["session"],
     queryFn: async () => {
-      const user = await getCurrentUser();
+      const { session , error } = await getSession();
 
-      return user;
+      return { session, error };
     },
   });
 
   if (error) {
     toast.error(error.message);
   }
+
+
 
   return (
     <>
@@ -34,7 +40,7 @@ const Page = () => {
           <div className="flex items-center justify-between font-bold">
             <h1 className="text-3xl">Dashboard</h1>
             <h2 className="text-xl font-bold">
-              Welcome, {user?.user_metadata?.full_name}
+              Welcome, {session?.session?.user?.user_metadata?.full_name}
             </h2>
           </div>
           <ParentSummary />

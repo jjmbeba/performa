@@ -1,6 +1,5 @@
-import { getCurrentUser, getUserRole } from "@/app/auth-actions/server/actions";
+import { getUserRole } from "@/app/auth-actions/server/actions";
 import Sidebar from "@/components/Sidebar";
-import { redirect } from "next/navigation";
 import React from "react";
 
 const layout = async ({
@@ -8,11 +7,9 @@ const layout = async ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const user = await getCurrentUser();
 
-  if (!user) {
-    redirect("/login");
-  } else {
+  
+
     const data = await getUserRole();
     const role = data?.userRole?.[0]?.role;
     return (
@@ -23,7 +20,7 @@ const layout = async ({
         </div>
       </div>
     );
-  }
+  
 };
 
 export default layout;

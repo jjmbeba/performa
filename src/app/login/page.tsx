@@ -1,30 +1,27 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { useMutation } from "@tanstack/react-query";
-import { signInUser } from "../auth-actions/client/actions";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
-import { revalidatePath } from "next/cache";
-import { revalidate } from "../auth-actions/server/actions";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { getSession, signInUser } from "../auth-actions/client/actions";
 
 const loginSchema = z.object({
   email: z.string().email({
@@ -37,13 +34,23 @@ const loginSchema = z.object({
 
 const Page = () => {
   const router = useRouter();
-  const [user, setUser] = useAuthStore((state) => [state.user, state.setUser]);
 
-  useEffect(() => {
-    if (user) {
-      router.push("/dashboard");
-    }
-  }, [router, user]);
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      const { session, error } = await getSession();
+
+      if (error) {
+        toast.error(error.message);
+      }
+
+      if (session) {
+        redirect("/dashboard");
+      }
+
+      return;
+    },
+  });
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -58,22 +65,18 @@ const Page = () => {
     mutationFn: async (values: z.infer<typeof loginSchema>) => {
       const { data, error } = await signInUser(values);
 
-      return { data, error };
+      if (error) {
+        toast.error(error.message);
+      }
+
+      if (data && data.user) {
+        toast.success("Login successful");
+        router.push("/dashboard");
+      }
+
+      return;
     },
   });
-
-  useEffect(() => {
-    if (error?.message) {
-      toast.error(error.message);
-    } else if (data?.error) {
-      toast.error(data.error.message);
-    } else if (isSuccess) {
-      toast.success("Login successful");
-      setUser(data.data.user);
-      revalidate();
-      router.push("/dashboard");
-    }
-  }, [error, isSuccess, data, setUser, router]);
 
   function onSubmit(values: z.infer<typeof loginSchema>) {
     mutate(values);
@@ -82,7 +85,7 @@ const Page = () => {
   const [hide, setHide] = useState(false);
 
   return (
-    <div className="max-w-lg mx-auto mt-5">
+    <div className="max-w-lg mx-auto mt-5 py-24">
       <h1 className="font-bold text-4xl">Login into your account</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4">

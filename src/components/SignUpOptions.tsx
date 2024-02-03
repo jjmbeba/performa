@@ -14,7 +14,6 @@ import { revalidatePath } from "next/cache";
 
 const SignUpOptions = () => {
   const [onHandleNext] = useFormStore((state) => [state.onHandleNext]);
-  const [user, setUser] = useAuthStore((state) => [state.user, state.setUser]);
 
   return (
     <motion.div
@@ -36,7 +35,7 @@ const SignUpOptions = () => {
           translateX: 0,
         },
       }}
-      className="flex flex-col items-center justify-center mt-8"
+      className="flex flex-col items-center justify-center mt-8 py-24"
     >
       <h1 className="font-bold text-4xl">Sign in with:</h1>
       <div className="mt-8 flex flex-col items-center gap-4">
@@ -49,11 +48,9 @@ const SignUpOptions = () => {
           onClick={async () => {
             const { data, error, user } = await signInWithGoogle();
 
-            console.log(user);
             if (error) {
               toast.error(error.message);
             } else if (data) {
-              setUser(user);
               revalidatePath("/", "layout");
 
               redirect("/dashboard");

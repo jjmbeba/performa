@@ -2,7 +2,6 @@
 
 import { createClient } from "@/utils/supabase/client";
 import { Student } from "@/utils/types";
-import { useQuery } from "@tanstack/react-query";
 
 type SignupData = {
   fullName: string;
@@ -16,7 +15,7 @@ type LoginData = {
   email: string;
   password: string;
 };
-const supabase = createClient();
+export const supabase = createClient();
 
 export async function signUpNewUser({
   fullName,
@@ -78,6 +77,15 @@ export async function signInWithGoogle() {
   return { data, user, error };
 }
 
+export async function getSession() {
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
+
+  return { session, error };
+}
+
 export async function getParentStudents() {
   const user = await getCurrentUser();
 
@@ -106,4 +114,13 @@ export async function addStudent(values: Student) {
     .select();
 
   return { data, error };
+}
+
+export async function deleteStudent(id: number) {
+  const { error } = await supabase
+    .from("students")
+    .delete()
+    .eq("id", id);
+
+  return { error };
 }
